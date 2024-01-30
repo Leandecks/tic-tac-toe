@@ -1,5 +1,4 @@
 "use strict";
-console.log("JS Started");
 
 const gameboard = (function () {
   const board = [];
@@ -10,113 +9,133 @@ const gameboard = (function () {
 
   const getBoard = () => board;
 
-  /* 
-  [0][1][2]
-  [3][4][5]
-  [6][7][8]
-  */
-
-  function printBoard() {
-    let outputBoard = "";
-
-    for (let i = 0; i < 9; i++) {
-      if ((i + 1) % 3 === 0) {
-        outputBoard += `[${board[i]}]\n`;
-      } else {
-        outputBoard += `[${board[i]}]`;
-      }
-    }
-
-    return outputBoard;
-  }
-
-  function getBoardCell (cellNumber) {
-    const cellContent = board[cellNumber];
-    return cellContent;
-  }
-
   function setBoardCell (cellNumber, cellContent) {
     if ((cellContent === "X" || cellContent === "O") && board[cellNumber] === "") {
       board[cellNumber] = cellContent;
     }
   }
 
-  return { getBoard, getBoardCell, setBoardCell, printBoard };
+  function displayBoard() {
+    const cells = document.querySelectorAll(".cell");
+
+    for (let i = 0; i < 9; i++) {
+      cells[i].textContent = board[i];
+    }
+  }
+
+  function clearBoard() {
+    for (let i = 0; i < 9; i++) {
+      board[i] = "";
+    }
+  }
+
+  function checkForGameEnd() {
+    /*
+    * 0 = game not finished
+    * 1 = X win
+    * 2 = O win
+    * 3 = draw
+    * */
+
+    let result;
+    let draw = true;
+
+    board.forEach(cell => {
+      if (cell === "") {
+        draw = false;
+      }
+    });
+
+    if (
+        board[0] === "O" && board[1] === "O" && board[2] === "O"
+        || board[3] === "O" && board[4] === "O" && board[5] === "O"
+        || board[6] === "O" && board[7] === "O" && board[8] === "O"
+        || board[0] === "O" && board[3] === "O" && board[6] === "O"
+        || board[1] === "O" && board[4] === "O" && board[7] === "O"
+        || board[2] === "O" && board[5] === "O" && board[8] === "O"
+        || board[0] === "O" && board[4] === "O" && board[8] === "O"
+        || board[2] === "O" && board[4] === "O" && board[6] === "O"
+    ) {
+      result =  2;
+    } else if (
+        board[0] === "X" && board[1] === "X" && board[2] === "X"
+        || board[3] === "X" && board[4] === "X" && board[5] === "X"
+        || board[6] === "X" && board[7] === "X" && board[8] === "X"
+        || board[0] === "X" && board[3] === "X" && board[6] === "X"
+        || board[1] === "X" && board[4] === "X" && board[7] === "X"
+        || board[2] === "X" && board[5] === "X" && board[8] === "X"
+        || board[0] === "X" && board[4] === "X" && board[8] === "X"
+        || board[2] === "X" && board[4] === "X" && board[6] === "X"
+    ) {
+      result = 1;
+    } else if (draw) {
+      result = 3;
+    } else {
+      result = 0;
+    }
+
+    return result;
+  }
+
+  return { getBoard, setBoardCell, displayBoard, clearBoard, checkForGameEnd };
 })();
 
 function Player(name, symbol) {
-  const playTurn = () => {
-    const field = prompt(`Choose field, ${name}: `);
-    gameboard.setBoardCell(field, symbol)
-  }
-  return { name, symbol, playTurn };
+  return { name, symbol };
 }
 
 const player1 = Player("Player 1", "X");
 const player2 = Player("Player 2", "O");
 
-function checkForGameEnd(board) {
-  /*
-  * 0 = game not finished
-  * 1 = O win
-  * 2 = X win
-  * */
+document.addEventListener("DOMContentLoaded", () => {
+  const startButton = document.querySelector(".start-button");
 
-  let result = 0;
-
-  if (
-      board[0] === "O" && board[1] === "O" && board[2] === "O"
-      || board[3] === "O" && board[4] === "O" && board[5] === "O"
-      || board[6] === "O" && board[7] === "O" && board[8] === "O"
-      || board[0] === "O" && board[3] === "O" && board[6] === "O"
-      || board[1] === "O" && board[4] === "O" && board[7] === "O"
-      || board[2] === "O" && board[5] === "O" && board[8] === "O"
-      || board[0] === "O" && board[4] === "O" && board[8] === "O"
-      || board[2] === "O" && board[4] === "O" && board[6] === "O"
-  ) {
-    result =  1;
-  } else if (
-      board[0] === "X" && board[1] === "X" && board[2] === "X"
-      || board[3] === "X" && board[4] === "X" && board[5] === "X"
-      || board[6] === "X" && board[7] === "X" && board[8] === "X"
-      || board[0] === "X" && board[3] === "X" && board[6] === "X"
-      || board[1] === "X" && board[4] === "X" && board[7] === "X"
-      || board[2] === "X" && board[5] === "X" && board[8] === "X"
-      || board[0] === "X" && board[4] === "X" && board[8] === "X"
-      || board[2] === "X" && board[4] === "X" && board[6] === "X"
-  ) {
-    result = 2;
-  } else {
-    result = 0;
-  }
-
-  return result;
-}
+  playGame();
+  startButton.addEventListener("click", () => {
+    playGame();
+  });
+});
 
 function playGame() {
-  alert("Welcome to Tic Tac Toe!");
+  const setDisplay = (text) => document.querySelector(".display").textContent = text;
+  const cells = document.querySelectorAll(".cell");
 
-  let result = 0;
+  gameboard.clearBoard();
+  gameboard.displayBoard();
 
-  while (true) {
-    player1.playTurn();
-    result = checkForGameEnd(gameboard.getBoard());
-    if (result !== 0) {
-      break;
-    }
+  setDisplay("Welcome to Tic Tac Toe!");
 
-    player2.playTurn();
-    result = checkForGameEnd(gameboard.getBoard());
-    if (result !== 0) {
-      break;
-    }
-  }
+  let currentPlayer = player1;
+  let gameEnded = false;
 
-  if (result === 1) {
-    alert("Player 2 wins!")
-  } else if (result === 2) {
-    alert("Player 1 wins!")
-  }
+  setDisplay(`It's ${currentPlayer.name}'s turn`);
+
+  cells.forEach(cell => {
+    cell.addEventListener("click", () => {
+
+      if (cell.textContent === "" && !gameEnded) {
+        const cellNumber = cell.classList.item(1)[4] - 1;
+        gameboard.setBoardCell(cellNumber, currentPlayer.symbol);
+        gameboard.displayBoard();
+      }
+
+      currentPlayer = currentPlayer === player1 ? player2 : player1;
+
+      const result = gameboard.checkForGameEnd();
+
+      if (result === 1) {
+        setDisplay("Player 1 (X) wins!");
+        gameEnded = true;
+      } else if (result === 2) {
+        setDisplay("Player 2 (O) wins!");
+        gameEnded = true;
+      } else if (result === 3) {
+        gameEnded = true;
+        setDisplay("It's a draw!")
+      } else {
+        setDisplay(`It's ${currentPlayer.name}'s turn`);
+      }
+
+    });
+  });
 }
-
-playGame();
