@@ -96,10 +96,21 @@ footer p a {
     color: var(--prime);
     transition: all 250ms ease;
     padding: .2rem;
+    text-align: center;
 }
 
 footer p a:hover {
     text-decoration: none;
     color: var(--text);
     background-color: var(--prime);
+}
+
+@media screen and (max-width: 460px) {
+    h1 {
+        font-size: 3.7rem;
+    }
+
+    .start-button {
+        font-size: 1.7rem;
+    }
 }
