@@ -15,14 +15,6 @@ const gameboard = (function () {
     }
   }
 
-  function displayBoard() {
-    const cells = document.querySelectorAll(".cell");
-
-    for (let i = 0; i < 9; i++) {
-      cells[i].textContent = board[i];
-    }
-  }
-
   function clearBoard() {
     for (let i = 0; i < 9; i++) {
       board[i] = "";
@@ -77,7 +69,7 @@ const gameboard = (function () {
     return result;
   }
 
-  return { getBoard, setBoardCell, displayBoard, clearBoard, checkForGameEnd };
+  return { getBoard, setBoardCell, clearBoard, checkForGameEnd };
 })();
 
 function Player(name, symbol) {
@@ -96,12 +88,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+function displayBoard(board) {
+  const cells = document.querySelectorAll(".cell");
+
+  for (let i = 0; i < 9; i++) {
+    cells[i].textContent = board[i];
+  }
+}
+
 function playGame() {
   const setDisplay = (text) => document.querySelector(".display").textContent = text;
   const cells = document.querySelectorAll(".cell");
 
   gameboard.clearBoard();
-  gameboard.displayBoard();
+  displayBoard(gameboard.getBoard());
 
   setDisplay("Welcome to Tic Tac Toe!");
 
@@ -116,7 +116,7 @@ function playGame() {
       if (cell.textContent === "" && !gameEnded) {
         const cellNumber = cell.classList.item(1)[4] - 1;
         gameboard.setBoardCell(cellNumber, currentPlayer.symbol);
-        gameboard.displayBoard();
+        displayBoard(gameboard.getBoard());
       }
 
       currentPlayer = currentPlayer === player1 ? player2 : player1;
